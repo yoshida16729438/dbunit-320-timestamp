@@ -6,6 +6,6 @@ on:
 
 jobs:
   test:
-    uses: ./.github/common-test.yml
+    uses: ./.github/workflows/common-test.yml
     with:
       dbunit-version: 3.2.0

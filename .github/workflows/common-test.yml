@@ -17,4 +17,4 @@ jobs:
           java-version: 21
 
       - run: |
-        mvn test -Ddbunit.version=${{ inputs.dbunit-version }}
+          mvn test -Ddbunit.version=${{ inputs.dbunit-version }}
