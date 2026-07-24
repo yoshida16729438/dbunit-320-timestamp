@@ -1,0 +1,11 @@
+name: test with DBUnit 3.1.0
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: ./.github/common-test.yml
+    with:
+      dbunit-version: 3.1.0
