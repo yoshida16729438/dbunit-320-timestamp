@@ -15,14 +15,15 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+import org.dbunit.Assertion;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.csv.CsvDataSet;
 import org.dbunit.dataset.datatype.DataType;
 import org.dbunit.dataset.datatype.DataTypeException;
 import org.dbunit.ext.h2.H2DataTypeFactory;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -73,21 +74,14 @@ class MainTest {
         }
     }
 
-    void setup() throws Exception {
-        Tester tester = new Tester("org.h2.Driver", JDBC_URL);
-        IDatabaseConnection connection = tester.getConnection();
-        CsvDataSet dataSet = new CsvDataSet(Paths.get("src/test/resources").toFile());
-        if (tester.getDataSet() != null) {
-            DatabaseOperation.TRUNCATE_TABLE.execute(connection, dataSet);
-        }
-        tester.setDataSet(dataSet);
-        tester.onSetup();
-        connection.close();
-    }
-
     @Test
     void test() throws Exception {
-        setup();
+
+        // setup
+        Tester tester = new Tester("org.h2.Driver", JDBC_URL);
+        CsvDataSet dataSet = new CsvDataSet(Paths.get("src/test/resources").toFile());
+        tester.setDataSet(dataSet);
+        tester.onSetup();
 
         logData();
 
@@ -99,9 +93,16 @@ class MainTest {
 
         Timestamp act1 = getTimestamp(1);
         ZonedDateTime act2 = getOffsetDateTime(1).atZoneSameInstant(ZoneOffset.UTC);
+        IDatabaseConnection connection = tester.getConnection();
+        IDataSet act3 = connection.createDataSet(new String[] { "T" });
 
-        assertAll(() -> assertEquals(exp1, act1, "This will fail with DBUnit 3.2.0"),
-                () -> assertEquals(exp2, act2, "This will fail with DBUnit 3.2.0"));
+        try {
+            assertAll(() -> assertEquals(exp1, act1, "This will fail with DBUnit 3.2.0"),
+                    () -> assertEquals(exp2, act2, "This will fail with DBUnit 3.2.0"),
+                    () -> Assertion.assertEquals(dataSet, act3));
+        } finally {
+            connection.close();
+        }
     }
 
     private Timestamp getTimestamp(int id) {
