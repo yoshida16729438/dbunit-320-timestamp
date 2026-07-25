@@ -3,7 +3,6 @@ name: test with DBUnit 3.2.0
 on:
   pull_request:
   workflow_dispatch:
-  push:
 
 jobs:
   test:
