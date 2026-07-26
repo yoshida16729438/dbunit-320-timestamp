@@ -16,6 +16,7 @@ jobs:
         with:
           java-version: 21
           distribution: temurin
+          show-download-progress: true
 
       - run: |
           mvn test -Ddbunit.version=${{ inputs.dbunit-version }}
