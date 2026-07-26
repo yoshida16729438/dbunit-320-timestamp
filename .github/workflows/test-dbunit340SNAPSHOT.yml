@@ -1,4 +1,4 @@
-name: test with DBUnit 3.1.0
+name: test with DBUnit 3.4.0-SNAPSHOT
 
 on:
   pull_request:
